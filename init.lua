@@ -36,7 +36,7 @@ vim.pack.add({
 
 -- ui customizations
 require("vague").setup({ transparent = false })
-vim.cmd("colorscheme catppuccin-mocha")
+vim.cmd("colorscheme vague")
 vim.cmd(":hi statusline guibg=NONE")
 
 --lsp
@@ -113,6 +113,10 @@ require("blink.cmp").setup({
 		expand = function(snippet)
 			require("luasnip").lsp_expand(snippet)
 		end,
+	},
+	keymap = {
+		preset = "enter",
+		["<C-y>"] = { "select_and_accept" },
 	},
 })
 
