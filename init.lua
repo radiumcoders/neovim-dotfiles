@@ -14,6 +14,7 @@ vim.bo.shiftwidth = 4
 --some keymaps
 vim.g.mapleader = " "
 keymap.set("n", "<leader>o", ":update<CR> :source<CR>")
+keymap.set("n", "<leader>l", ":!")
 
 --all the plugins can be added like these without lazy :D
 vim.pack.add({
@@ -24,6 +25,7 @@ vim.pack.add({
 	-- plugins
 	{ src = "https://github.com/stevearc/oil.nvim" },
 	{ src = "https://github.com/nvim-mini/mini.pick" },
+	{ src = "https://github.com/windwp/nvim-autopairs" },
 	-- lsp
 	{ src = "https://github.com/neovim/nvim-lspconfig" },
 	{ src = "https://github.com/williamboman/mason.nvim" },
@@ -32,16 +34,19 @@ vim.pack.add({
 	-- completions
 	{ src = "https://github.com/L3MON4D3/LuaSnip" },
 	{ src = "https://github.com/rafamadriz/friendly-snippets" },
-    { src = "https://github.com/saghen/blink.cmp", version = vim.version.range("^1") },
+	{ src = "https://github.com/saghen/blink.cmp", version = vim.version.range("^1") },
 	--copilot
 	{ src = "https://github.com/zbirenbaum/copilot.lua" },
-	{ src = "https://github.com/copilotlsp-nvim/copilot-lsp"},
+	{ src = "https://github.com/copilotlsp-nvim/copilot-lsp" },
 	{ src = "https://github.com/zbirenbaum/copilot-cmp" },
 	-- status line
 	{ src = "https://github.com/nvim-lualine/lualine.nvim" },
-
+	-- nvim tree
+	{ src = "https://github.com/nvim-tree/nvim-web-devicons" }, -- optioinal
+	{ src = "https://github.com/nvim-tree/nvim-tree.lua" },
 })
 
+require("nvim-autopairs").setup({})
 
 --copilot
 require("copilot").setup({
@@ -49,51 +54,51 @@ require("copilot").setup({
 		enabled = true,
 		auto_trigger = true,
 		keymap = {
-			accept = "<M-l>",      -- Alt+l to accept suggestion
+			accept = "<M-l>", -- Alt+l to accept suggestion
 			accept_word = "<M-w>", -- Alt+w to accept word
 			accept_line = "<M-j>", -- Alt+j to accept line
-			next = "<M-]>",        -- Alt+] next suggestion
-			prev = "<M-[>",        -- Alt+[ previous suggestion
-			dismiss = "<C-]>",     -- Ctrl+] dismiss
+			next = "<M-]>", -- Alt+] next suggestion
+			prev = "<M-[>", -- Alt+[ previous suggestion
+			dismiss = "<C-]>", -- Ctrl+] dismiss
 		},
 	},
 	panel = { enabled = false },
 })
 
 -- ui customizations
-require('kanagawa').setup({
-    transparent = false,
-    colors = {
-        theme = {
-            all = {
-                ui = {
-                    bg_gutter = "none" -- removes gutter background
-                }
-            }
-        }
-    },
-    overrides = function(colors)
-        local theme = colors.theme
-        return {
-            NormalFloat = { bg = theme.ui.bg },
-            FloatBorder = { bg = theme.ui.bg },
-            -- Make sidebars match background
-            NvimTreeNormal = { bg = theme.ui.bg },
-            NeoTreeNormal = { bg = theme.ui.bg },
-            -- Line numbers
-            LineNr = { bg = "none" },
-            SignColumn = { bg = "none" },
-        }
-    end,
+require("kanagawa").setup({
+	transparent = false,
+	colors = {
+		theme = {
+			all = {
+				ui = {
+					bg_gutter = "none", -- removes gutter background
+				},
+			},
+		},
+	},
+	overrides = function(colors)
+		local theme = colors.theme
+		return {
+			NormalFloat = { bg = theme.ui.bg },
+			FloatBorder = { bg = theme.ui.bg },
+			-- Make sidebars match background
+			NvimTreeNormal = { bg = theme.ui.bg },
+			NeoTreeNormal = { bg = theme.ui.bg },
+			-- Line numbers
+			LineNr = { bg = "none" },
+			SignColumn = { bg = "none" },
+		}
+	end,
 })
 vim.cmd("colorscheme kanagawa")
 vim.cmd(":hi statusline guibg=NONE")
 
 --status line
-require('lualine').setup({
-    options = {
-        theme = 'kanagawa'
-    }
+require("lualine").setup({
+	options = {
+		theme = "kanagawa",
+	},
 })
 
 --lsp
@@ -108,7 +113,7 @@ vim.lsp.enable({
 	"zls",
 })
 
-keymap.set("n", "lf", vim.lsp.buf.format)
+keymap.set("n", "ff", vim.lsp.buf.format)
 
 require("mason-lspconfig").setup()
 require("mason-tool-installer").setup({
@@ -125,6 +130,28 @@ require("mason-tool-installer").setup({
 		"prettier",
 	},
 })
+
+vim.lsp.config("rust_analyzer", {
+	settings = {
+		["rust-analyzer"] = {
+			inlayHints = {
+				enable = true,
+				showParameterNames = true,
+				parameterHintsPrefix = "<- ",
+				otherHintsPrefix = "=> ",
+			},
+		},
+	},
+	on_attach = function(client, bufnr)
+		if client.server_capabilities.inlayHintProvider then
+			vim.lsp.inlay_hint.enable(true, { bufnr = bufnr })
+		end
+	end,
+})
+-- Toggle inlay hints with <leader>th
+vim.keymap.set("n", "<leader>th", function()
+	vim.lsp.inlay_hint.enable(not vim.lsp.inlay_hint.is_enabled())
+end, { desc = "Toggle inlay hints" })
 
 -- to remove the vim error in configs
 vim.lsp.config("lua_ls", {
@@ -177,7 +204,6 @@ require("blink.cmp").setup({
 	},
 })
 
-
 -- files stuff
 --
 -- pick
@@ -191,9 +217,5 @@ keymap.set("n", "<leader>jj", ":Oil <CR>")
 --
 
 ---------nvim tree------------
-vim.pack.add({
-  { src = 'https://github.com/nvim-tree/nvim-web-devicons' }, -- optioinal
-  { src = 'https://github.com/nvim-tree/nvim-tree.lua' },
-})
 require("nvim-tree").setup()
 vim.keymap.set("n", "<leader>e", ":NvimTreeToggle<CR>")
