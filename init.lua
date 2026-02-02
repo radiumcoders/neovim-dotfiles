@@ -31,9 +31,29 @@ vim.pack.add({
 	-- completions
 	{ src = "https://github.com/L3MON4D3/LuaSnip" },
 	{ src = "https://github.com/rafamadriz/friendly-snippets" },
-	{ src = "https://github.com/Saghen/blink.cmp", version = vim.version.range("1.*") },
+    { src = "https://github.com/saghen/blink.cmp", version = vim.version.range("^1") },
 	--copilot
 	{ src = "https://github.com/zbirenbaum/copilot.lua" },
+	{ src = "https://github.com/copilotlsp-nvim/copilot-lsp"},
+	{ src = "https://github.com/zbirenbaum/copilot-cmp" }
+})
+
+
+--copilot
+require("copilot").setup({
+	suggestion = {
+		enabled = true,
+		auto_trigger = true,
+		keymap = {
+			accept = "<M-l>",      -- Alt+l to accept suggestion
+			accept_word = "<M-w>", -- Alt+w to accept word
+			accept_line = "<M-j>", -- Alt+j to accept line
+			next = "<M-]>",        -- Alt+] next suggestion
+			prev = "<M-[>",        -- Alt+[ previous suggestion
+			dismiss = "<C-]>",     -- Ctrl+] dismiss
+		},
+	},
+	panel = { enabled = false },
 })
 
 -- ui customizations
@@ -122,6 +142,7 @@ require("blink.cmp").setup({
 	},
 })
 
+
 -- files stuff
 --
 -- pick
@@ -133,3 +154,11 @@ keymap.set("n", "<leader>h", ":Pick help<CR>")
 require("oil").setup()
 keymap.set("n", "<leader>jj", ":Oil <CR>")
 --
+
+---------nvim tree------------
+vim.pack.add({
+  { src = 'https://github.com/nvim-tree/nvim-web-devicons' }, -- optioinal
+  { src = 'https://github.com/nvim-tree/nvim-tree.lua' },
+})
+require("nvim-tree").setup()
+vim.keymap.set("n", "<leader>e", ":NvimTreeToggle<CR>")
