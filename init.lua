@@ -20,6 +20,7 @@ vim.pack.add({
 	-- themes
 	{ src = "https://github.com/vague-theme/vague.nvim" },
 	{ src = "https://github.com/catppuccin/nvim" },
+	{ src = "https://github.com/rebelot/kanagawa.nvim" },
 	-- plugins
 	{ src = "https://github.com/stevearc/oil.nvim" },
 	{ src = "https://github.com/nvim-mini/mini.pick" },
@@ -35,7 +36,10 @@ vim.pack.add({
 	--copilot
 	{ src = "https://github.com/zbirenbaum/copilot.lua" },
 	{ src = "https://github.com/copilotlsp-nvim/copilot-lsp"},
-	{ src = "https://github.com/zbirenbaum/copilot-cmp" }
+	{ src = "https://github.com/zbirenbaum/copilot-cmp" },
+	-- status line
+	{ src = "https://github.com/nvim-lualine/lualine.nvim" },
+
 })
 
 
@@ -57,9 +61,40 @@ require("copilot").setup({
 })
 
 -- ui customizations
-require("vague").setup({ transparent = false })
-vim.cmd("colorscheme vague")
+require('kanagawa').setup({
+    transparent = false,
+    colors = {
+        theme = {
+            all = {
+                ui = {
+                    bg_gutter = "none" -- removes gutter background
+                }
+            }
+        }
+    },
+    overrides = function(colors)
+        local theme = colors.theme
+        return {
+            NormalFloat = { bg = theme.ui.bg },
+            FloatBorder = { bg = theme.ui.bg },
+            -- Make sidebars match background
+            NvimTreeNormal = { bg = theme.ui.bg },
+            NeoTreeNormal = { bg = theme.ui.bg },
+            -- Line numbers
+            LineNr = { bg = "none" },
+            SignColumn = { bg = "none" },
+        }
+    end,
+})
+vim.cmd("colorscheme kanagawa")
 vim.cmd(":hi statusline guibg=NONE")
+
+--status line
+require('lualine').setup({
+    options = {
+        theme = 'kanagawa'
+    }
+})
 
 --lsp
 require("mason").setup()
